@@ -2,10 +2,9 @@ from flask import Flask, request
 from data_utils import preprocess_data, preprocess_predict_data
 import threading
 
-# Preprocessing
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.preprocessing import LabelEncoder
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.neighbors import KNeighborsClassifier
 
 app = Flask(__name__)
 
@@ -13,12 +12,10 @@ data_lock = threading.Lock()
 x = []
 y = []
 
-training_thread = None
-
-# Model and friends
 dictVectorizer = DictVectorizer(sparse=False)
 labelEncoder = LabelEncoder()
-clf = RandomForestClassifier(max_depth=2, random_state=0)
+clf = KNeighborsClassifier(n_neighbors=7) # 7 is the best number of neighbors
+training_thread = None
 
 def train_model():
     with data_lock:
@@ -68,6 +65,6 @@ def predict():
 
 @app.route('/')
 def index():
-    return 'PR mini-project web-server running'
+    return 'web-server running'
 
 app.run(host='0.0.0.0', port=8000)
